@@ -81,32 +81,31 @@ const Dashboard = ({ user, setUser }) => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {/* Header */}
-        <div className="mb-8">
+        <div className="bg-slate-800 border-b border-slate-700 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="text-2xl font-bold text-white">
                 Welcome back, {user.firstName}!
               </h1>
-              <p className="text-slate-300 mt-2">
+              <p className="text-slate-300 text-sm">
                 Here's your trading dashboard overview
               </p>
             </div>
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="btn-secondary flex items-center space-x-2"
+              className="p-2 text-slate-400 hover:text-white transition-colors"
             >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
+              <RefreshCw className={`h-5 w-5 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 py-6">
           <div className="card-dark card-hover p-6 mobile-card">
             <div className="flex items-center">
               <div className="p-3 bg-green-600/20 rounded-lg">
@@ -165,7 +164,7 @@ const Dashboard = ({ user, setUser }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Link to="/deposit" className="card-dark card-hover p-6 mobile-card">
             <div className="text-center">
               <div className="p-3 bg-green-600/20 rounded-lg w-fit mx-auto mb-4">
@@ -204,7 +203,7 @@ const Dashboard = ({ user, setUser }) => {
         </div>
 
         {/* Recent Transactions */}
-        <div className="card-dark p-6">
+        <div className="card-dark p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-white">Recent Transactions</h2>
             <Link to="/transactions" className="text-blue-400 hover:text-blue-300 font-medium">

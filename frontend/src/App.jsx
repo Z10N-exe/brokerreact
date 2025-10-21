@@ -4,8 +4,11 @@ import LandingPage from './pages/LandingPage';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Portfolio from './pages/Portfolio';
+import Markets from './pages/Markets';
 import Deposit from './pages/Deposit';
 import Withdraw from './pages/Withdraw';
+import Send from './pages/Send';
 import Transactions from './pages/Transactions';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -62,7 +65,7 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-slate-900">
         <Navbar user={user} onLogout={handleLogout} />
         
         <Routes>
@@ -80,12 +83,24 @@ function App() {
             element={user ? <Dashboard user={user} setUser={setUser} /> : <Navigate to="/login" />} 
           />
           <Route 
+            path="/portfolio" 
+            element={user ? <Portfolio user={user} setUser={setUser} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/markets" 
+            element={user ? <Markets user={user} /> : <Navigate to="/login" />} 
+          />
+          <Route 
             path="/deposit" 
             element={user ? <Deposit user={user} setUser={setUser} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/withdraw" 
             element={user ? <Withdraw user={user} setUser={setUser} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/send" 
+            element={user ? <Send user={user} setUser={setUser} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/transactions" 

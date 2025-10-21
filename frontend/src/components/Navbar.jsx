@@ -1,22 +1,27 @@
-import { Link } from 'react-router-dom';
-import { User, LogOut, Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { User, LogOut, Menu, X, Home, TrendingUp, Send, Download, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 const Navbar = ({ user, onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="nav-dark sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">Aspire Secure Trade</span>
-            </Link>
-          </div>
+    <>
+      {/* Top Navigation */}
+      <nav className="nav-dark sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <Link to="/" className="flex-shrink-0 flex items-center">
+                <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">A</span>
+                </div>
+                <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">Aspire Secure Trade</span>
+              </Link>
+            </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
@@ -143,6 +148,64 @@ const Navbar = ({ user, onLogout }) => {
         )}
       </div>
     </nav>
+
+      {/* Bottom Navigation for Mobile */}
+      {user && (
+        <div className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 z-40 md:hidden">
+          <div className="flex items-center justify-around py-2">
+            <Link
+              to="/dashboard"
+              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
+                isActive('/dashboard') ? 'text-blue-400' : 'text-slate-400'
+              }`}
+            >
+              <Home className="h-5 w-5 mb-1" />
+              <span className="text-xs">Home</span>
+            </Link>
+            
+            <Link
+              to="/portfolio"
+              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
+                isActive('/portfolio') ? 'text-blue-400' : 'text-slate-400'
+              }`}
+            >
+              <Wallet className="h-5 w-5 mb-1" />
+              <span className="text-xs">Portfolio</span>
+            </Link>
+            
+            <Link
+              to="/markets"
+              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
+                isActive('/markets') ? 'text-blue-400' : 'text-slate-400'
+              }`}
+            >
+              <TrendingUp className="h-5 w-5 mb-1" />
+              <span className="text-xs">Markets</span>
+            </Link>
+            
+            <Link
+              to="/send"
+              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
+                isActive('/send') ? 'text-blue-400' : 'text-slate-400'
+              }`}
+            >
+              <Send className="h-5 w-5 mb-1" />
+              <span className="text-xs">Send</span>
+            </Link>
+            
+            <Link
+              to="/transactions"
+              className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
+                isActive('/transactions') ? 'text-blue-400' : 'text-slate-400'
+              }`}
+            >
+              <Download className="h-5 w-5 mb-1" />
+              <span className="text-xs">History</span>
+            </Link>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
