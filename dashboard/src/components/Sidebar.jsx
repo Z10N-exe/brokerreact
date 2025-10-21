@@ -7,7 +7,8 @@ import {
   ArrowDownRight, 
   FileText, 
   Settings,
-  Shield
+  Shield,
+  Wallet
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -18,6 +19,7 @@ const Sidebar = () => {
     { path: '/users', icon: Users, label: 'Users' },
     { path: '/deposits', icon: ArrowDownRight, label: 'Deposits' },
     { path: '/withdrawals', icon: ArrowUpRight, label: 'Withdrawals' },
+    { path: '/wallets', icon: Wallet, label: 'Wallets' },
     { path: '/logs', icon: FileText, label: 'Audit Logs' },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ];

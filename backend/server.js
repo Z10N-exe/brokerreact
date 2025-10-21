@@ -8,6 +8,9 @@ const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const walletRoutes = require('./routes/walletRoutes');
+const depositRoutes = require('./routes/depositRoutes');
+const withdrawalRoutes = require('./routes/withdrawalRoutes');
 
 const app = express();
 
@@ -26,6 +29,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wallets', walletRoutes);
+app.use('/api/deposits', depositRoutes);
+app.use('/api/withdrawals', withdrawalRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

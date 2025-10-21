@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import UserDetail from './pages/UserDetail';
 import Deposits from './pages/Deposits';
 import Withdrawals from './pages/Withdrawals';
+import Wallets from './pages/Wallets';
 import Logs from './pages/Logs';
 import Settings from './pages/Settings';
 
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/users/:id" element={<UserDetail />} />
                 <Route path="/deposits" element={<Deposits />} />
                 <Route path="/withdrawals" element={<Withdrawals />} />
+                <Route path="/wallets" element={<Wallets />} />
                 <Route path="/logs" element={<Logs />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>

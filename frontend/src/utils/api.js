@@ -42,4 +42,18 @@ export const userAPI = {
   getTransactions: () => api.get('/api/user/transactions'),
 };
 
+export const walletAPI = {
+  getWalletAddresses: () => api.get('/api/wallets'),
+};
+
+export const depositAPI = {
+  createDeposit: (data) => api.post('/api/deposits', data),
+  getMyDeposits: () => api.get('/api/deposits/my'),
+};
+
+export const withdrawalAPI = {
+  createWithdrawal: (amount) => api.post('/api/withdrawals', { amount }),
+  getMyWithdrawals: () => api.get('/api/withdrawals/my'),
+};
+
 export default api;

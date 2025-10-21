@@ -1,14 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { userAPI } from '../utils/api';
+import { userAPI, walletAPI, depositAPI } from '../utils/api';
 import Card from '../components/Card';
-import { ArrowDownRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowDownRight, CheckCircle, AlertCircle, Copy, Wallet } from 'lucide-react';
 
 const Deposit = ({ user, setUser }) => {
   const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('BTC');
+  const [transactionHash, setTransactionHash] = useState('');
+  const [wallets, setWallets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('crypto');
+
+  useEffect(() => {
+    fetchWallets();
+  }, []);
+
+  const fetchWallets = async () => {
+    try {
+      const response = await walletAPI.getWalletAddresses();
+      setWallets(response.data.wallets || []);
+    } catch (error) {
+      console.error('Error fetching wallets:', error);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setMessage('Address copied to clipboard!');
+    setTimeout(() => setMessage(''), 3000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,11 +46,21 @@ const Deposit = ({ user, setUser }) => {
     }
 
     try {
-      const response = await userAPI.createDeposit(parseFloat(amount));
+      let response;
+      if (activeTab === 'crypto') {
+        response = await depositAPI.createDeposit({
+          amount: parseFloat(amount),
+          currency,
+          transactionHash
+        });
+      } else {
+        response = await userAPI.createDeposit(parseFloat(amount));
+      }
       
-      if (response.data.transaction) {
+      if (response.data.deposit || response.data.transaction) {
         setMessage('Deposit request submitted successfully! It will be processed within 24 hours.');
         setAmount('');
+        setTransactionHash('');
         
         // Refresh user data
         const userResponse = await userAPI.getMe();
@@ -74,6 +107,34 @@ const Deposit = ({ user, setUser }) => {
           {/* Deposit Form */}
           <div className="lg:col-span-2">
             <Card>
+              {/* Tab Navigation */}
+              <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('crypto')}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === 'crypto'
+                      ? 'bg-white text-primary-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Wallet className="h-4 w-4 inline mr-2" />
+                  Crypto Deposit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('fiat')}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === 'fiat'
+                      ? 'bg-white text-primary-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <ArrowDownRight className="h-4 w-4 inline mr-2" />
+                  Fiat Deposit
+                </button>
+              </div>
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
                   <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md flex items-center">
@@ -89,27 +150,87 @@ const Deposit = ({ user, setUser }) => {
                   </div>
                 )}
 
-                <div>
-                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
-                    Deposit Amount (USD)
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">$</span>
+                {activeTab === 'crypto' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-2">
+                          Currency
+                        </label>
+                        <select
+                          id="currency"
+                          value={currency}
+                          onChange={(e) => setCurrency(e.target.value)}
+                          className="input-field"
+                          required
+                        >
+                          <option value="BTC">Bitcoin (BTC)</option>
+                          <option value="ETH">Ethereum (ETH)</option>
+                          <option value="USDT">Tether (USDT)</option>
+                          <option value="USDC">USD Coin (USDC)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+                          Amount (USD)
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span className="text-gray-500 sm:text-sm">$</span>
+                          </div>
+                          <input
+                            type="number"
+                            id="amount"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            className="input-field pl-7"
+                            placeholder="0.00"
+                            min="1"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <input
-                      type="number"
-                      id="amount"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="input-field pl-7"
-                      placeholder="0.00"
-                      min="1"
-                      step="0.01"
-                      required
-                    />
+                    <div>
+                      <label htmlFor="transactionHash" className="block text-sm font-medium text-gray-700 mb-2">
+                        Transaction Hash (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        id="transactionHash"
+                        value={transactionHash}
+                        onChange={(e) => setTransactionHash(e.target.value)}
+                        className="input-field"
+                        placeholder="Enter transaction hash if available"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'fiat' && (
+                  <div>
+                    <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+                      Deposit Amount (USD)
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-gray-500 sm:text-sm">$</span>
+                      </div>
+                      <input
+                        type="number"
+                        id="amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="input-field pl-7"
+                        placeholder="0.00"
+                        min="1"
+                        step="0.01"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Quick Amount Buttons */}
                 <div>
@@ -130,26 +251,46 @@ const Deposit = ({ user, setUser }) => {
                   </div>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <ArrowDownRight className="h-5 w-5 text-blue-400" />
-                    </div>
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-blue-800">
-                        Deposit Information
-                      </h3>
-                      <div className="mt-2 text-sm text-blue-700">
-                        <ul className="list-disc pl-5 space-y-1">
-                          <li>Minimum deposit: $100</li>
-                          <li>Maximum deposit: $50,000</li>
-                          <li>Processing time: 24 hours</li>
-                          <li>No fees for deposits</li>
-                        </ul>
+                {activeTab === 'crypto' && (
+                  <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <Wallet className="h-5 w-5 text-green-400" />
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-medium text-green-800">
+                          Crypto Deposit Addresses
+                        </h3>
+                        <div className="mt-2 text-sm text-green-700">
+                          <p>Send your crypto to the address below for the selected currency:</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {activeTab === 'fiat' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <ArrowDownRight className="h-5 w-5 text-blue-400" />
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-medium text-blue-800">
+                          Deposit Information
+                        </h3>
+                        <div className="mt-2 text-sm text-blue-700">
+                          <ul className="list-disc pl-5 space-y-1">
+                            <li>Minimum deposit: $100</li>
+                            <li>Maximum deposit: $50,000</li>
+                            <li>Processing time: 24 hours</li>
+                            <li>No fees for deposits</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex space-x-4">
                   <button
@@ -168,7 +309,7 @@ const Deposit = ({ user, setUser }) => {
           </div>
 
           {/* Account Summary */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <Card>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Summary</h3>
               <div className="space-y-4">
@@ -210,6 +351,43 @@ const Deposit = ({ user, setUser }) => {
                 </div>
               </div>
             </Card>
+
+            {/* Crypto Wallet Addresses */}
+            {activeTab === 'crypto' && wallets.length > 0 && (
+              <Card>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Crypto Deposit Addresses</h3>
+                <div className="space-y-4">
+                  {wallets.map((wallet) => (
+                    <div key={wallet._id} className="border border-gray-200 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-gray-900">{wallet.currency}</span>
+                        <span className="text-xs text-gray-500">{wallet.network}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <code className="flex-1 text-xs bg-gray-100 px-2 py-1 rounded font-mono break-all">
+                          {wallet.address}
+                        </code>
+                        <button
+                          onClick={() => copyToClipboard(wallet.address)}
+                          className="p-1 text-gray-500 hover:text-gray-700"
+                          title="Copy address"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Last updated: {new Date(wallet.updatedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-xs text-yellow-700">
+                    ⚠️ Only send {currency} to the {currency} address. Sending other cryptocurrencies may result in permanent loss.
+                  </p>
+                </div>
+              </Card>
+            )}
           </div>
         </div>
       </div>

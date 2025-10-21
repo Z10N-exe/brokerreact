@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminAPI } from '../utils/api';
 import { Table, TableHeader, TableHeaderCell, TableBody, TableRow, TableCell } from '../components/Table';
 import Modal from '../components/Modal';
-import { ArrowDownRight, CheckCircle, XCircle, Clock, User } from 'lucide-react';
+import { ArrowDownRight, CheckCircle, XCircle, Clock, User, Wallet } from 'lucide-react';
 
 const Deposits = () => {
   const [transactions, setTransactions] = useState([]);
@@ -20,9 +20,8 @@ const Deposits = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await adminAPI.getPendingTransactions();
-      const deposits = (response.data.transactions || []).filter(t => t.type === 'deposit');
-      setTransactions(deposits);
+      const response = await adminAPI.getAllDeposits();
+      setTransactions(response.data.deposits || []);
     } catch (error) {
       console.error('Error fetching deposits:', error);
     } finally {
@@ -43,9 +42,9 @@ const Deposits = () => {
 
     try {
       if (actionType === 'approve') {
-        await adminAPI.approveDeposit(selectedTransaction._id, { note });
+        await adminAPI.approveCryptoDeposit(selectedTransaction._id, { note });
       } else {
-        await adminAPI.rejectDeposit(selectedTransaction._id, { note });
+        await adminAPI.rejectCryptoDeposit(selectedTransaction._id, { note });
       }
       
       setMessage(`${actionType === 'approve' ? 'Deposit approved' : 'Deposit rejected'} successfully`);
@@ -154,6 +153,8 @@ const Deposits = () => {
             <TableHeader>
               <TableHeaderCell>User</TableHeaderCell>
               <TableHeaderCell>Amount</TableHeaderCell>
+              <TableHeaderCell>Currency</TableHeaderCell>
+              <TableHeaderCell>Transaction Hash</TableHeaderCell>
               <TableHeaderCell>Status</TableHeaderCell>
               <TableHeaderCell>Date</TableHeaderCell>
               <TableHeaderCell>Actions</TableHeaderCell>
@@ -172,6 +173,19 @@ const Deposits = () => {
                   <TableCell>
                     <div className="text-sm font-medium text-gray-900">
                       {formatCurrency(transaction.amount)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Wallet className="h-4 w-4 text-blue-600 mr-1" />
+                      <span className="text-sm font-medium text-gray-900">
+                        {transaction.currency}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-gray-900 max-w-xs truncate">
+                      {transaction.transactionHash || '-'}
                     </div>
                   </TableCell>
                   <TableCell>
