@@ -6,15 +6,15 @@ const Navbar = ({ user, onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-lg">
+    <nav className="nav-dark sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <div className="h-8 w-8 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">A</span>
               </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">Aspire Secure Trade</span>
+              <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">Aspire Secure Trade</span>
             </Link>
           </div>
 
@@ -22,25 +22,25 @@ const Navbar = ({ user, onLogout }) => {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                <Link to="/dashboard" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/dashboard" className="text-slate-300 hover:text-white hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
                   Dashboard
                 </Link>
-                <Link to="/deposit" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/deposit" className="text-slate-300 hover:text-white hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
                   Deposit
                 </Link>
-                <Link to="/withdraw" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/withdraw" className="text-slate-300 hover:text-white hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
                   Withdraw
                 </Link>
-                <Link to="/transactions" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/transactions" className="text-slate-300 hover:text-white hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
                   Transactions
                 </Link>
-                <div className="flex items-center space-x-2">
-                  <User className="h-5 w-5 text-gray-500" />
-                  <span className="text-sm text-gray-700">{user.firstName} {user.lastName}</span>
+                <div className="ml-4 pl-4 border-l border-slate-600 flex items-center space-x-2">
+                  <User className="h-5 w-5 text-slate-400" />
+                  <span className="text-sm text-slate-300">{user.firstName} {user.lastName}</span>
                 </div>
                 <button
                   onClick={onLogout}
-                  className="flex items-center space-x-1 text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium"
+                  className="btn-danger mobile-button flex items-center space-x-1"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
@@ -48,7 +48,7 @@ const Navbar = ({ user, onLogout }) => {
               </>
             ) : (
               <>
-                <Link to="/login" className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/login" className="text-slate-300 hover:text-white hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
                   Login
                 </Link>
                 <Link to="/signup" className="btn-primary">
@@ -62,7 +62,8 @@ const Navbar = ({ user, onLogout }) => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-primary-600 focus:outline-none focus:text-primary-600"
+              className="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-all duration-200"
+              aria-label="Toggle mobile menu"
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -71,58 +72,59 @@ const Navbar = ({ user, onLogout }) => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden border-t border-slate-700 bg-slate-800">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {user ? (
                 <>
+                  <div className="px-3 py-2 text-slate-400 text-sm border-b border-slate-700">
+                    Welcome, {user.firstName}
+                  </div>
                   <Link
                     to="/dashboard"
-                    className="text-gray-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+                    className="text-slate-300 hover:text-white hover:bg-slate-700 block px-3 py-2 rounded-lg text-base font-medium transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <Link
                     to="/deposit"
-                    className="text-gray-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+                    className="text-slate-300 hover:text-white hover:bg-slate-700 block px-3 py-2 rounded-lg text-base font-medium transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Deposit
                   </Link>
                   <Link
                     to="/withdraw"
-                    className="text-gray-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+                    className="text-slate-300 hover:text-white hover:bg-slate-700 block px-3 py-2 rounded-lg text-base font-medium transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Withdraw
                   </Link>
                   <Link
                     to="/transactions"
-                    className="text-gray-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+                    className="text-slate-300 hover:text-white hover:bg-slate-700 block px-3 py-2 rounded-lg text-base font-medium transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Transactions
                   </Link>
-                  <div className="flex items-center space-x-2 px-3 py-2">
-                    <User className="h-5 w-5 text-gray-500" />
-                    <span className="text-sm text-gray-700">{user.firstName} {user.lastName}</span>
-                  </div>
                   <button
                     onClick={() => {
                       onLogout();
                       setIsMenuOpen(false);
                     }}
-                    className="flex items-center space-x-1 text-gray-700 hover:text-red-600 w-full text-left px-3 py-2 rounded-md text-base font-medium"
+                    className="block w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20 px-3 py-2 rounded-lg text-base font-medium transition-all duration-200"
                   >
-                    <LogOut className="h-4 w-4" />
-                    <span>Logout</span>
+                    <div className="flex items-center space-x-2">
+                      <LogOut className="h-4 w-4" />
+                      <span>Logout</span>
+                    </div>
                   </button>
                 </>
               ) : (
                 <>
                   <Link
                     to="/login"
-                    className="text-gray-700 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium"
+                    className="text-slate-300 hover:text-white hover:bg-slate-700 block px-3 py-2 rounded-lg text-base font-medium transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Login

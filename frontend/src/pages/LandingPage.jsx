@@ -47,23 +47,23 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-900">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white">
+      <section className="gradient-dark text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">
               Trade Smart with
-              <span className="block text-yellow-300">Aspire Secure Trade</span>
+              <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">Aspire Secure Trade</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-100 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 text-slate-300 max-w-3xl mx-auto">
               Join thousands of successful traders earning consistent profits with our advanced forex trading platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/signup" className="btn-primary bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 text-lg">
+              <Link to="/signup" className="btn-primary text-lg mobile-button">
                 Start Trading Now
               </Link>
-              <Link to="/login" className="btn-secondary bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 py-3 px-8 text-lg">
+              <Link to="/login" className="btn-secondary text-lg mobile-button">
                 Login to Account
               </Link>
             </div>
@@ -72,27 +72,29 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Why Choose Aspire Secure Trade?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
               We provide everything you need to succeed in forex trading
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="card-dark card-hover p-6 text-center mobile-card">
                 <div className="flex justify-center mb-4">
-                  {feature.icon}
+                  <div className="p-3 bg-blue-600/20 rounded-lg">
+                    {feature.icon}
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-slate-300">
                   {feature.description}
                 </p>
               </div>
@@ -102,55 +104,55 @@ const LandingPage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">$50M+</div>
-              <div className="text-gray-600">Total Volume Traded</div>
+            <div className="card-dark p-6 mobile-card">
+              <div className="text-4xl font-bold text-blue-400 mb-2">$50M+</div>
+              <div className="text-slate-300">Total Volume Traded</div>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">10,000+</div>
-              <div className="text-gray-600">Active Traders</div>
+            <div className="card-dark p-6 mobile-card">
+              <div className="text-4xl font-bold text-blue-400 mb-2">10,000+</div>
+              <div className="text-slate-300">Active Traders</div>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">15%</div>
-              <div className="text-gray-600">Average Monthly Return</div>
+            <div className="card-dark p-6 mobile-card">
+              <div className="text-4xl font-bold text-blue-400 mb-2">15%</div>
+              <div className="text-slate-300">Average Monthly Return</div>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">24/7</div>
-              <div className="text-gray-600">Customer Support</div>
+            <div className="card-dark p-6 mobile-card">
+              <div className="text-4xl font-bold text-blue-400 mb-2">24/7</div>
+              <div className="text-slate-300">Customer Support</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               What Our Traders Say
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-slate-300">
               Real testimonials from successful traders
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="card">
+              <div key={index} className="card-dark card-hover p-6 mobile-card">
                 <div className="flex items-center mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-4 italic">
+                <p className="text-slate-300 mb-4 italic">
                   "{testimonial.comment}"
                 </p>
                 <div>
-                  <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                  <div className="text-gray-500 text-sm">{testimonial.location}</div>
+                  <div className="font-semibold text-white">{testimonial.name}</div>
+                  <div className="text-slate-400 text-sm">{testimonial.location}</div>
                 </div>
               </div>
             ))}
@@ -159,19 +161,19 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary-600 text-white">
+      <section className="py-20 gradient-accent text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Ready to Start Your Trading Journey?
           </h2>
-          <p className="text-xl mb-8 text-primary-100 max-w-2xl mx-auto">
+          <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
             Join thousands of successful traders and start earning consistent profits today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup" className="btn-primary bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 text-lg">
+            <Link to="/signup" className="btn-primary text-lg mobile-button">
               Create Free Account
             </Link>
-            <Link to="/login" className="btn-secondary bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 py-3 px-8 text-lg">
+            <Link to="/login" className="btn-secondary text-lg mobile-button">
               Login to Dashboard
             </Link>
           </div>

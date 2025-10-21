@@ -74,23 +74,23 @@ const Dashboard = ({ user, setUser }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-white">
                 Welcome back, {user.firstName}!
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-slate-300 mt-2">
                 Here's your trading dashboard overview
               </p>
             </div>
@@ -107,96 +107,96 @@ const Dashboard = ({ user, setUser }) => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <div className="card-dark card-hover p-6 mobile-card">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <DollarSign className="h-6 w-6 text-green-600" />
+              <div className="p-3 bg-green-600/20 rounded-lg">
+                <DollarSign className="h-6 w-6 text-green-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Account Balance</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-slate-300">Account Balance</p>
+                <p className="text-2xl font-bold text-white">
                   {formatCurrency(user.balance)}
                 </p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card>
+          <div className="card-dark card-hover p-6 mobile-card">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-blue-600" />
+              <div className="p-3 bg-blue-600/20 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-blue-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Profit</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-slate-300">Total Profit</p>
+                <p className="text-2xl font-bold text-white">
                   {formatCurrency(user.profit)}
                 </p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card>
+          <div className="card-dark card-hover p-6 mobile-card">
             <div className="flex items-center">
-              <div className="p-3 bg-yellow-100 rounded-lg">
-                <Clock className="h-6 w-6 text-yellow-600" />
+              <div className="p-3 bg-yellow-600/20 rounded-lg">
+                <Clock className="h-6 w-6 text-yellow-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending Withdrawals</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-slate-300">Pending Withdrawals</p>
+                <p className="text-2xl font-bold text-white">
                   {formatCurrency(user.withdrawalsPending)}
                 </p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card>
+          <div className="card-dark card-hover p-6 mobile-card">
             <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <RefreshCw className="h-6 w-6 text-purple-600" />
+              <div className="p-3 bg-purple-600/20 rounded-lg">
+                <RefreshCw className="h-6 w-6 text-purple-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Transactions</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-slate-300">Total Transactions</p>
+                <p className="text-2xl font-bold text-white">
                   {transactions.length}
                 </p>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Link to="/deposit" className="card hover:shadow-lg transition-shadow duration-200">
+          <Link to="/deposit" className="card-dark card-hover p-6 mobile-card">
             <div className="text-center">
-              <div className="p-3 bg-green-100 rounded-lg w-fit mx-auto mb-4">
-                <ArrowDownRight className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-green-600/20 rounded-lg w-fit mx-auto mb-4">
+                <ArrowDownRight className="h-8 w-8 text-green-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Make a Deposit</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-lg font-semibold text-white mb-2">Make a Deposit</h3>
+              <p className="text-slate-300 text-sm">
                 Add funds to your account to start trading
               </p>
             </div>
           </Link>
 
-          <Link to="/withdraw" className="card hover:shadow-lg transition-shadow duration-200">
+          <Link to="/withdraw" className="card-dark card-hover p-6 mobile-card">
             <div className="text-center">
-              <div className="p-3 bg-red-100 rounded-lg w-fit mx-auto mb-4">
-                <ArrowUpRight className="h-8 w-8 text-red-600" />
+              <div className="p-3 bg-red-600/20 rounded-lg w-fit mx-auto mb-4">
+                <ArrowUpRight className="h-8 w-8 text-red-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Withdraw Funds</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-lg font-semibold text-white mb-2">Withdraw Funds</h3>
+              <p className="text-slate-300 text-sm">
                 Request a withdrawal from your account
               </p>
             </div>
           </Link>
 
-          <Link to="/transactions" className="card hover:shadow-lg transition-shadow duration-200">
+          <Link to="/transactions" className="card-dark card-hover p-6 mobile-card">
             <div className="text-center">
-              <div className="p-3 bg-blue-100 rounded-lg w-fit mx-auto mb-4">
-                <RefreshCw className="h-8 w-8 text-blue-600" />
+              <div className="p-3 bg-blue-600/20 rounded-lg w-fit mx-auto mb-4">
+                <RefreshCw className="h-8 w-8 text-blue-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">View Transactions</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-lg font-semibold text-white mb-2">View Transactions</h3>
+              <p className="text-slate-300 text-sm">
                 See all your transaction history
               </p>
             </div>
@@ -204,51 +204,51 @@ const Dashboard = ({ user, setUser }) => {
         </div>
 
         {/* Recent Transactions */}
-        <Card>
+        <div className="card-dark p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Transactions</h2>
-            <Link to="/transactions" className="text-primary-600 hover:text-primary-700 font-medium">
+            <h2 className="text-xl font-semibold text-white">Recent Transactions</h2>
+            <Link to="/transactions" className="text-blue-400 hover:text-blue-300 font-medium">
               View all
             </Link>
           </div>
 
           {transactions.length === 0 ? (
             <div className="text-center py-8">
-              <RefreshCw className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No transactions yet</p>
-              <p className="text-gray-400 text-sm">Start by making your first deposit</p>
+              <RefreshCw className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+              <p className="text-slate-300">No transactions yet</p>
+              <p className="text-slate-400 text-sm">Start by making your first deposit</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="table-dark min-w-full">
+                <thead>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-200 uppercase tracking-wider">
                       Date
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                   {transactions.slice(0, 5).map((transaction) => (
                     <tr key={transaction._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {getTransactionIcon(transaction.type)}
-                          <span className="ml-2 text-sm font-medium text-gray-900 capitalize">
+                          <span className="ml-2 text-sm font-medium text-white capitalize">
                             {transaction.type}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {formatCurrency(transaction.amount)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -256,7 +256,7 @@ const Dashboard = ({ user, setUser }) => {
                           {transaction.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                         {new Date(transaction.createdAt).toLocaleDateString()}
                       </td>
                     </tr>
@@ -265,7 +265,7 @@ const Dashboard = ({ user, setUser }) => {
               </table>
             </div>
           )}
-        </Card>
+        </div>
       </div>
     </div>
   );
