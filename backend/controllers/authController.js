@@ -13,18 +13,29 @@ const register = async (req, res) => {
       return res.status(400).json({ message: errors.array()[0].msg });
     }
 
-    const { firstName, lastName, country, phone, password } = req.body;
+    const { firstName, lastName, email, country, phone, password } = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ phone });
+    const existingUser = await User.findOne({ 
+      $or: [
+        { phone },
+        ...(email ? [{ email }] : [])
+      ]
+    });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists with this phone number' });
+      if (existingUser.phone === phone) {
+        return res.status(400).json({ message: 'User already exists with this phone number' });
+      }
+      if (existingUser.email === email) {
+        return res.status(400).json({ message: 'User already exists with this email address' });
+      }
     }
 
     // Create new user
     const user = new User({
       firstName,
       lastName,
+      email,
       country,
       phone,
       passwordHash: password
@@ -41,6 +52,7 @@ const register = async (req, res) => {
         id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
+        email: user.email,
         country: user.country,
         phone: user.phone,
         balance: user.balance,
@@ -84,6 +96,7 @@ const login = async (req, res) => {
         id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
+        email: user.email,
         country: user.country,
         phone: user.phone,
         balance: user.balance,

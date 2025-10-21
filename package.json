@@ -21,7 +21,9 @@
     "logs": "docker-compose -f docker-compose.prod.yml logs -f",
     "restart": "docker-compose -f docker-compose.prod.yml restart",
     "stop": "docker-compose -f docker-compose.prod.yml down",
-    "clean": "docker-compose -f docker-compose.prod.yml down -v --remove-orphans"
+    "clean": "docker-compose -f docker-compose.prod.yml down -v --remove-orphans",
+    "test:auth": "node scripts/test-auth.js",
+    "start:dev": "node scripts/start-dev.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
