@@ -43,7 +43,10 @@ export const adminAPI = {
   rejectCryptoDeposit: (id, data) => api.post(`/api/deposits/${id}/reject`, data),
 
   // Withdrawals
+  getWithdrawals: () => api.get('/api/withdrawals/all'),
   getAllWithdrawals: () => api.get('/api/withdrawals/all'),
+  approveWithdrawal: (id, data) => api.post(`/api/withdrawals/${id}/approve`, data),
+  rejectWithdrawal: (id, data) => api.post(`/api/withdrawals/${id}/reject`, data),
   approveCryptoWithdrawal: (id, data) => api.post(`/api/withdrawals/${id}/approve`, data),
   rejectCryptoWithdrawal: (id, data) => api.post(`/api/withdrawals/${id}/reject`, data),
 

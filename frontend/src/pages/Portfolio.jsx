@@ -165,11 +165,11 @@ const Portfolio = ({ user, setUser }) => {
             <span className="text-white text-sm font-medium">Withdraw</span>
           </Link>
 
-          <Link to="/send" className="bg-slate-800 rounded-xl p-4 text-center hover:bg-slate-700 transition-colors">
+          <Link to="/withdraw" className="bg-slate-800 rounded-xl p-4 text-center hover:bg-slate-700 transition-colors">
             <div className="bg-blue-600/20 rounded-lg p-3 w-fit mx-auto mb-2">
               <Send className="h-6 w-6 text-blue-400" />
             </div>
-            <span className="text-white text-sm font-medium">Send</span>
+            <span className="text-white text-sm font-medium">Withdraw</span>
           </Link>
 
           <Link to="/transactions" className="bg-slate-800 rounded-xl p-4 text-center hover:bg-slate-700 transition-colors">

@@ -1,28 +1,36 @@
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../utils/api';
-import { Table, TableHeader, TableHeaderCell, TableBody, TableRow, TableCell } from '../components/Table';
-import Modal from '../components/Modal';
-import { ArrowUpRight, CheckCircle, XCircle, Clock, User } from 'lucide-react';
+import { 
+  CheckCircle, 
+  XCircle, 
+  Clock, 
+  Eye, 
+  Filter,
+  Search,
+  Download,
+  AlertTriangle,
+  DollarSign,
+  User,
+  Calendar
+} from 'lucide-react';
 
 const Withdrawals = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [withdrawals, setWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [showActionModal, setShowActionModal] = useState(false);
-  const [actionType, setActionType] = useState('');
-  const [note, setNote] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetchTransactions();
+    fetchWithdrawals();
   }, []);
 
-  const fetchTransactions = async () => {
+  const fetchWithdrawals = async () => {
     try {
-      const response = await adminAPI.getPendingTransactions();
-      const withdrawals = (response.data.transactions || []).filter(t => t.type === 'withdrawal');
-      setTransactions(withdrawals);
+      const response = await adminAPI.getWithdrawals();
+      setWithdrawals(response.data.withdrawals || []);
     } catch (error) {
       console.error('Error fetching withdrawals:', error);
     } finally {
@@ -30,31 +38,65 @@ const Withdrawals = () => {
     }
   };
 
-  const handleAction = async (transaction, type) => {
-    setSelectedTransaction(transaction);
-    setActionType(type);
-    setNote('');
-    setShowActionModal(true);
-  };
-
-  const submitAction = async () => {
+  const handleApprove = async (withdrawalId, adminNote = '') => {
     setActionLoading(true);
-    setMessage('');
-
     try {
-      if (actionType === 'approve') {
-        await adminAPI.approveWithdrawal(selectedTransaction._id, { note });
-      } else {
-        await adminAPI.rejectWithdrawal(selectedTransaction._id, { note });
-      }
-      
-      setMessage(`${actionType === 'approve' ? 'Withdrawal approved' : 'Withdrawal rejected'} successfully`);
-      setShowActionModal(false);
-      fetchTransactions();
+      await adminAPI.approveWithdrawal(withdrawalId, { note: adminNote });
+      await fetchWithdrawals();
+      setShowModal(false);
     } catch (error) {
-      setMessage(`Failed to ${actionType} withdrawal`);
+      console.error('Error approving withdrawal:', error);
+      alert('Failed to approve withdrawal');
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleReject = async (withdrawalId, adminNote = '') => {
+    setActionLoading(true);
+    try {
+      await adminAPI.rejectWithdrawal(withdrawalId, { note: adminNote });
+      await fetchWithdrawals();
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error rejecting withdrawal:', error);
+      alert('Failed to reject withdrawal');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const filteredWithdrawals = withdrawals.filter(withdrawal => {
+    const matchesSearch = withdrawal.user?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         withdrawal.user?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         withdrawal.user?.phone?.includes(searchTerm);
+    const matchesStatus = statusFilter === 'all' || withdrawal.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'approved':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'rejected':
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'pending':
+        return <Clock className="h-5 w-5 text-yellow-500" />;
+      default:
+        return <Clock className="h-5 w-5 text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'approved':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'rejected':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -65,196 +107,342 @@ const Withdrawals = () => {
     }).format(amount);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'approved':
-        return 'text-green-600 bg-green-100';
-      case 'pending':
-        return 'text-yellow-600 bg-yellow-100';
-      case 'rejected':
-        return 'text-red-600 bg-red-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
-    }
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Withdrawal Management</h1>
-        <p className="text-gray-600 mt-1">Review and approve pending withdrawals</p>
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Withdrawal Management</h1>
+          <p className="text-slate-300">Manage and approve user withdrawal requests</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <button className="btn-secondary flex items-center space-x-2">
+            <Download className="h-4 w-4" />
+            <span>Export</span>
+          </button>
+        </div>
       </div>
 
-      {message && (
-        <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md">
-          {message}
+      {/* Filters */}
+      <div className="card-dark p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by name or phone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input-dark pl-10 w-full"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="input-dark"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <button
+            onClick={fetchWithdrawals}
+            className="btn-primary flex items-center justify-center space-x-2"
+          >
+            <Filter className="h-4 w-4" />
+            <span>Refresh</span>
+          </button>
         </div>
-      )}
+      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <Clock className="h-6 w-6 text-yellow-600" />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="card-dark p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-slate-300 text-sm">Total Withdrawals</p>
+              <p className="text-2xl font-bold text-white">{withdrawals.length}</p>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending Withdrawals</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {transactions.filter(t => t.status === 'pending').length}
-              </p>
-            </div>
+            <DollarSign className="h-8 w-8 text-blue-400" />
           </div>
         </div>
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-red-100 rounded-lg">
-              <ArrowUpRight className="h-6 w-6 text-red-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Amount</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {formatCurrency(transactions.reduce((sum, t) => sum + t.amount, 0))}
+        <div className="card-dark p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-slate-300 text-sm">Pending</p>
+              <p className="text-2xl font-bold text-yellow-400">
+                {withdrawals.filter(w => w.status === 'pending').length}
               </p>
             </div>
+            <Clock className="h-8 w-8 text-yellow-400" />
           </div>
         </div>
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <User className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Unique Users</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {new Set(transactions.map(t => t.userId._id)).size}
+        <div className="card-dark p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-slate-300 text-sm">Approved</p>
+              <p className="text-2xl font-bold text-green-400">
+                {withdrawals.filter(w => w.status === 'approved').length}
               </p>
             </div>
+            <CheckCircle className="h-8 w-8 text-green-400" />
+          </div>
+        </div>
+        <div className="card-dark p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-slate-300 text-sm">Total Amount</p>
+              <p className="text-2xl font-bold text-white">
+                {formatCurrency(withdrawals.reduce((sum, w) => sum + w.amount, 0))}
+              </p>
+            </div>
+            <DollarSign className="h-8 w-8 text-green-400" />
           </div>
         </div>
       </div>
 
       {/* Withdrawals Table */}
-      <div className="card">
-        {transactions.length === 0 ? (
-          <div className="text-center py-8">
-            <ArrowUpRight className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No pending withdrawals</p>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableHeaderCell>User</TableHeaderCell>
-              <TableHeaderCell>Amount</TableHeaderCell>
-              <TableHeaderCell>Status</TableHeaderCell>
-              <TableHeaderCell>Date</TableHeaderCell>
-              <TableHeaderCell>Actions</TableHeaderCell>
-            </TableHeader>
-            <TableBody>
-              {transactions.map((transaction) => (
-                <TableRow key={transaction._id}>
-                  <TableCell>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {transaction.userId?.firstName} {transaction.userId?.lastName}
+      <div className="card-dark">
+        <div className="p-6 border-b border-slate-700">
+          <h2 className="text-lg font-semibold text-white">Withdrawal Requests</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="table-dark w-full">
+            <thead>
+              <tr>
+                <th className="px-6 py-4 text-left">User</th>
+                <th className="px-6 py-4 text-left">Amount</th>
+                <th className="px-6 py-4 text-left">Method</th>
+                <th className="px-6 py-4 text-left">Status</th>
+                <th className="px-6 py-4 text-left">Date</th>
+                <th className="px-6 py-4 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredWithdrawals.map((withdrawal) => (
+                <tr key={withdrawal._id}>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        <User className="h-4 w-4 text-white" />
                       </div>
-                      <div className="text-sm text-gray-500">{transaction.userId?.phone}</div>
+                      <div>
+                        <div className="text-white font-medium">
+                          {withdrawal.user?.firstName} {withdrawal.user?.lastName}
+                        </div>
+                        <div className="text-slate-400 text-sm">{withdrawal.user?.phone}</div>
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm font-medium text-gray-900">
-                      {formatCurrency(transaction.amount)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-white font-semibold">
+                      {formatCurrency(withdrawal.amount)}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(transaction.status)}`}>
-                      {transaction.status}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-slate-300 capitalize">
+                      {withdrawal.method || 'Bank Transfer'}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(withdrawal.status)}`}>
+                      {getStatusIcon(withdrawal.status)}
+                      <span className="ml-1 capitalize">{withdrawal.status}</span>
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-gray-500">
-                      {new Date(transaction.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-slate-300 text-sm">
+                      {formatDate(withdrawal.createdAt)}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    {transaction.status === 'pending' && (
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleAction(transaction, 'approve')}
-                          className="btn-success text-sm"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleAction(transaction, 'reject')}
-                          className="btn-danger text-sm"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => {
+                          setSelectedWithdrawal(withdrawal);
+                          setShowModal(true);
+                        }}
+                        className="p-2 text-slate-400 hover:text-white transition-colors"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      {withdrawal.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(withdrawal._id)}
+                            className="p-2 text-green-400 hover:text-green-300 transition-colors"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleReject(withdrawal._id)}
+                            className="p-2 text-red-400 hover:text-red-300 transition-colors"
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Action Modal */}
-      <Modal
-        isOpen={showActionModal}
-        onClose={() => setShowActionModal(false)}
-        title={`${actionType === 'approve' ? 'Approve' : 'Reject'} Withdrawal`}
-      >
-        <div className="space-y-4">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">Transaction Details</h4>
-            <div className="text-sm text-gray-600">
-              <p><strong>User:</strong> {selectedTransaction?.userId?.firstName} {selectedTransaction?.userId?.lastName}</p>
-              <p><strong>Amount:</strong> {formatCurrency(selectedTransaction?.amount)}</p>
-              <p><strong>Date:</strong> {new Date(selectedTransaction?.createdAt).toLocaleDateString()}</p>
+      {/* Withdrawal Details Modal */}
+      {showModal && selectedWithdrawal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white">Withdrawal Details</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* User Info */}
+              <div className="bg-slate-700 rounded-xl p-4">
+                <h4 className="text-white font-semibold mb-3">User Information</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-slate-400 text-sm">Name</label>
+                    <div className="text-white">
+                      {selectedWithdrawal.user?.firstName} {selectedWithdrawal.user?.lastName}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-sm">Phone</label>
+                    <div className="text-white">{selectedWithdrawal.user?.phone}</div>
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-sm">Country</label>
+                    <div className="text-white">{selectedWithdrawal.user?.country}</div>
+                  </div>
+                  <div>
+                    <label className="text-slate-400 text-sm">Balance</label>
+                    <div className="text-white">{formatCurrency(selectedWithdrawal.user?.balance || 0)}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Withdrawal Details */}
+              <div className="bg-slate-700 rounded-xl p-4">
+                <h4 className="text-white font-semibold mb-3">Withdrawal Details</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Amount:</span>
+                    <span className="text-white font-semibold">{formatCurrency(selectedWithdrawal.amount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Method:</span>
+                    <span className="text-white capitalize">{selectedWithdrawal.method || 'Bank Transfer'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Status:</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedWithdrawal.status)}`}>
+                      {selectedWithdrawal.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Date:</span>
+                    <span className="text-white">{formatDate(selectedWithdrawal.createdAt)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bank/Crypto Details */}
+              {(selectedWithdrawal.bankDetails || selectedWithdrawal.cryptoDetails) && (
+                <div className="bg-slate-700 rounded-xl p-4">
+                  <h4 className="text-white font-semibold mb-3">
+                    {selectedWithdrawal.method === 'crypto' ? 'Crypto Details' : 'Bank Details'}
+                  </h4>
+                  <div className="space-y-3">
+                    {selectedWithdrawal.bankDetails && (
+                      <>
+                        <div>
+                          <label className="text-slate-400 text-sm">Account Name</label>
+                          <div className="text-white">{selectedWithdrawal.bankDetails.accountName}</div>
+                        </div>
+                        <div>
+                          <label className="text-slate-400 text-sm">Account Number</label>
+                          <div className="text-white">{selectedWithdrawal.bankDetails.accountNumber}</div>
+                        </div>
+                        <div>
+                          <label className="text-slate-400 text-sm">Bank Name</label>
+                          <div className="text-white">{selectedWithdrawal.bankDetails.bankName}</div>
+                        </div>
+                        <div>
+                          <label className="text-slate-400 text-sm">Routing Number</label>
+                          <div className="text-white">{selectedWithdrawal.bankDetails.routingNumber}</div>
+                        </div>
+                      </>
+                    )}
+                    {selectedWithdrawal.cryptoDetails && (
+                      <>
+                        <div>
+                          <label className="text-slate-400 text-sm">Wallet Address</label>
+                          <div className="text-white break-all">{selectedWithdrawal.cryptoDetails.walletAddress}</div>
+                        </div>
+                        <div>
+                          <label className="text-slate-400 text-sm">Network</label>
+                          <div className="text-white">{selectedWithdrawal.cryptoDetails.network}</div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Admin Actions */}
+              {selectedWithdrawal.status === 'pending' && (
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => handleApprove(selectedWithdrawal._id)}
+                    disabled={actionLoading}
+                    className="btn-success flex-1 flex items-center justify-center space-x-2"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Approve</span>
+                  </button>
+                  <button
+                    onClick={() => handleReject(selectedWithdrawal._id)}
+                    disabled={actionLoading}
+                    className="btn-danger flex-1 flex items-center justify-center space-x-2"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    <span>Reject</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Admin Note
-            </label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="input-field"
-              rows="3"
-              placeholder={`Reason for ${actionType}...`}
-            />
-          </div>
-
-          <div className="flex space-x-3">
-            <button
-              onClick={submitAction}
-              disabled={actionLoading}
-              className={`${actionType === 'approve' ? 'btn-success' : 'btn-danger'} disabled:opacity-50`}
-            >
-              {actionLoading ? 'Processing...' : `${actionType === 'approve' ? 'Approve' : 'Reject'} Withdrawal`}
-            </button>
-            <button
-              onClick={() => setShowActionModal(false)}
-              className="btn-secondary"
-            >
-              Cancel
-            </button>
-          </div>
         </div>
-      </Modal>
+      )}
     </div>
   );
 };

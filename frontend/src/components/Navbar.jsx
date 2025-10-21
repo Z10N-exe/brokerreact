@@ -184,13 +184,13 @@ const Navbar = ({ user, onLogout }) => {
             </Link>
             
             <Link
-              to="/send"
+              to="/withdraw"
               className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
-                isActive('/send') ? 'text-blue-400' : 'text-slate-400'
+                isActive('/withdraw') ? 'text-blue-400' : 'text-slate-400'
               }`}
             >
               <Send className="h-5 w-5 mb-1" />
-              <span className="text-xs">Send</span>
+              <span className="text-xs">Withdraw</span>
             </Link>
             
             <Link

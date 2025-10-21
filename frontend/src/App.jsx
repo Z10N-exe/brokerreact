@@ -8,7 +8,6 @@ import Portfolio from './pages/Portfolio';
 import Markets from './pages/Markets';
 import Deposit from './pages/Deposit';
 import Withdraw from './pages/Withdraw';
-import Send from './pages/Send';
 import Transactions from './pages/Transactions';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -97,10 +96,6 @@ function App() {
           <Route 
             path="/withdraw" 
             element={user ? <Withdraw user={user} setUser={setUser} /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/send" 
-            element={user ? <Send user={user} setUser={setUser} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/transactions" 
