@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { userAPI } from '../utils/api';
 import { 
   ArrowLeft, 
   MoreHorizontal, 
@@ -8,15 +9,25 @@ import {
   ArrowUpRight,
   Info,
   Shield,
-  Clock
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 
-const Send = ({ user, setUser }) => {
-  const [recipient, setRecipient] = useState('john.carter@email.com');
-  const [selectedAsset, setSelectedAsset] = useState('ETH');
+const Withdraw = ({ user, setUser }) => {
+  const [withdrawalMethod, setWithdrawalMethod] = useState('bank');
   const [amount, setAmount] = useState('');
-  const [network, setNetwork] = useState('Ethereum');
+  const [bankDetails, setBankDetails] = useState({
+    accountName: '',
+    accountNumber: '',
+    bankName: '',
+    routingNumber: ''
+  });
+  const [cryptoDetails, setCryptoDetails] = useState({
+    walletAddress: '',
+    network: 'Ethereum'
+  });
   const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const assets = [
     {
