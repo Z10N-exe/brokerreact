@@ -13,7 +13,15 @@
     "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:dashboard\"",
     "build:frontend": "cd frontend && npm run build",
     "build:dashboard": "cd dashboard && npm run build",
-    "build:all": "npm run build:frontend && npm run build:dashboard"
+    "build:all": "npm run build:frontend && npm run build:dashboard",
+    "start:prod": "cd backend && npm start",
+    "deploy": "chmod +x scripts/deploy.sh && ./scripts/deploy.sh",
+    "backup": "chmod +x scripts/backup.sh && ./scripts/backup.sh",
+    "monitor": "chmod +x scripts/monitor.sh && ./scripts/monitor.sh",
+    "logs": "docker-compose -f docker-compose.prod.yml logs -f",
+    "restart": "docker-compose -f docker-compose.prod.yml restart",
+    "stop": "docker-compose -f docker-compose.prod.yml down",
+    "clean": "docker-compose -f docker-compose.prod.yml down -v --remove-orphans"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
