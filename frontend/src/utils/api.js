@@ -38,7 +38,7 @@ export const authAPI = {
 export const userAPI = {
   getMe: () => api.get('/api/user/me'),
   createDeposit: (amount) => api.post('/api/user/deposit', { amount }),
-  createWithdrawal: (amount) => api.post('/api/user/withdraw', { amount }),
+  withdraw: (data) => api.post('/api/withdrawals', data),
   getTransactions: () => api.get('/api/user/transactions'),
 };
 
