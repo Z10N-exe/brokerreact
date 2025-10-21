@@ -414,6 +414,12 @@ const Withdrawals = () => {
                         </div>
                       </>
                     )}
+                    {selectedWithdrawal.paypalDetails && (
+                      <div>
+                        <label className="text-slate-400 text-sm">PayPal Email</label>
+                        <div className="text-white">{selectedWithdrawal.paypalDetails.email}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

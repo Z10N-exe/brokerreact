@@ -19,6 +19,24 @@ const withdrawalSchema = new mongoose.Schema({
   adminNote: {
     type: String,
     default: ''
+  },
+  method: {
+    type: String,
+    enum: ['bank', 'crypto', 'paypal'],
+    default: 'bank'
+  },
+  bankDetails: {
+    accountName: String,
+    accountNumber: String,
+    bankName: String,
+    routingNumber: String
+  },
+  cryptoDetails: {
+    walletAddress: String,
+    network: String
+  },
+  paypalDetails: {
+    email: String
   }
 }, {
   timestamps: true

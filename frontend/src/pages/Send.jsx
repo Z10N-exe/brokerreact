@@ -266,25 +266,30 @@ const Withdraw = ({ user, setUser }) => {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-sm">Network</span>
-              <span className="text-white text-sm">{network}</span>
+              <span className="text-slate-400 text-sm">Method</span>
+              <span className="text-white text-sm">
+                {withdrawalMethods.find(m => m.id === withdrawalMethod)?.name}
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-sm">Network Fee</span>
-              <span className="text-white text-sm">{calculateFees()} {selectedAsset}</span>
+              <span className="text-slate-400 text-sm">Processing Fee</span>
+              <span className="text-white text-sm">{formatCurrency(calculateFees())}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-400 text-sm">Estimated Time</span>
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4 text-slate-400" />
-                <span className="text-white text-sm">2-5 minutes</span>
+                <span className="text-white text-sm">
+                  {withdrawalMethod === 'bank' ? '1-3 business days' : 
+                   withdrawalMethod === 'crypto' ? '1-24 hours' : '1-2 business days'}
+                </span>
               </div>
             </div>
             <div className="border-t border-slate-700 pt-3">
               <div className="flex items-center justify-between">
                 <span className="text-slate-300 font-medium">Total</span>
                 <span className="text-white font-bold">
-                  {calculateTotal().toFixed(4)} {selectedAsset}
+                  {formatCurrency(calculateTotal())}
                 </span>
               </div>
             </div>

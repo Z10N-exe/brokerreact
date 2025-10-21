@@ -26,6 +26,9 @@ const Withdraw = ({ user, setUser }) => {
     walletAddress: '',
     network: 'Ethereum'
   });
+  const [paypalDetails, setPaypalDetails] = useState({
+    email: ''
+  });
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -89,7 +92,8 @@ const Withdraw = ({ user, setUser }) => {
         amount: parseFloat(amount),
         method: withdrawalMethod,
         ...(withdrawalMethod === 'bank' ? bankDetails : {}),
-        ...(withdrawalMethod === 'crypto' ? cryptoDetails : {})
+        ...(withdrawalMethod === 'crypto' ? cryptoDetails : {}),
+        ...(withdrawalMethod === 'paypal' ? paypalDetails : {})
       };
 
       await userAPI.withdraw(withdrawalData);
@@ -250,6 +254,23 @@ const Withdraw = ({ user, setUser }) => {
                 <option value="Tron">Tron</option>
                 <option value="BSC">BSC</option>
               </select>
+            </div>
+          </div>
+        )}
+
+        {withdrawalMethod === 'paypal' && (
+          <div className="mb-6">
+            <label className="block text-slate-300 text-sm font-medium mb-2">
+              PayPal Details
+            </label>
+            <div className="bg-slate-800 rounded-xl p-4 border border-slate-700 space-y-4">
+              <input
+                type="email"
+                placeholder="PayPal Email Address"
+                value={paypalDetails.email}
+                onChange={(e) => setPaypalDetails({...paypalDetails, email: e.target.value})}
+                className="w-full bg-slate-700 text-white placeholder-slate-400 rounded-lg px-4 py-3 border border-slate-600 focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
         )}

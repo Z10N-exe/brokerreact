@@ -10,17 +10,39 @@ const createWithdrawal = async (req, res) => {
       return res.status(400).json({ message: errors.array()[0].msg });
     }
 
-    const { amount } = req.body;
+    const { amount, method, ...details } = req.body;
 
     // Check if user has sufficient balance
     if (req.user.balance < amount) {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
-    const withdrawal = new Withdrawal({
+    const withdrawalData = {
       userId: req.user._id,
-      amount
-    });
+      amount,
+      method: method || 'bank'
+    };
+
+    // Add method-specific details
+    if (method === 'bank' && details.accountName) {
+      withdrawalData.bankDetails = {
+        accountName: details.accountName,
+        accountNumber: details.accountNumber,
+        bankName: details.bankName,
+        routingNumber: details.routingNumber
+      };
+    } else if (method === 'crypto' && details.walletAddress) {
+      withdrawalData.cryptoDetails = {
+        walletAddress: details.walletAddress,
+        network: details.network
+      };
+    } else if (method === 'paypal' && details.email) {
+      withdrawalData.paypalDetails = {
+        email: details.email
+      };
+    }
+
+    const withdrawal = new Withdrawal(withdrawalData);
 
     await withdrawal.save();
 
