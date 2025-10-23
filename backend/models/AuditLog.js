@@ -1,30 +1,63 @@
-const mongoose = require('mongoose');
+const { getDB } = require('../config/db');
 
-const auditLogSchema = new mongoose.Schema({
-  action: {
-    type: String,
-    enum: ['approve_withdrawal', 'reject_withdrawal', 'approve_deposit', 'reject_deposit', 'add_profit', 'adjust_balance', 'impersonate_user'],
-    required: true
-  },
-  adminName: {
-    type: String,
-    required: true
-  },
-  targetUser: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  note: {
-    type: String,
-    default: ''
-  },
-  amount: {
-    type: Number,
-    default: 0
+class AuditLog {
+  constructor(data) {
+    this.id = data.id;
+    this.action = data.action;
+    this.adminName = data.admin_name;
+    this.targetUser = data.target_user;
+    this.note = data.note;
+    this.amount = data.amount;
+    this.createdAt = data.created_at;
   }
-}, {
-  timestamps: true
-});
 
-module.exports = mongoose.model('AuditLog', auditLogSchema);
+  static async create(auditData) {
+    const db = getDB();
+    const { action, adminName, targetUser, note, amount } = auditData;
+    
+    return new Promise((resolve, reject) => {
+      const query = `
+        INSERT INTO audit_logs (action, admin_name, target_user, note, amount)
+        VALUES (?, ?, ?, ?, ?)
+      `;
+      
+      const values = [action, adminName, targetUser, note || '', amount || 0];
+      
+      db.run(query, values, function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          // Get the created audit log
+          db.get('SELECT * FROM audit_logs WHERE id = ?', [this.lastID], (err, row) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(new AuditLog(row));
+            }
+          });
+        }
+      });
+    });
+  }
+
+  static async findByTargetUser(userId) {
+    const db = getDB();
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT * FROM audit_logs 
+        WHERE target_user = ? 
+        ORDER BY created_at DESC
+      `;
+      
+      db.all(query, [userId], (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows.map(row => new AuditLog(row)));
+        }
+      });
+    });
+  }
+}
+
+module.exports = AuditLog;

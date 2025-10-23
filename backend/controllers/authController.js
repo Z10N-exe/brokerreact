@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
@@ -16,40 +17,39 @@ const register = async (req, res) => {
     const { firstName, lastName, email, country, phone, password } = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ 
-      $or: [
-        { phone },
-        ...(email ? [{ email }] : [])
-      ]
-    });
-    if (existingUser) {
-      if (existingUser.phone === phone) {
-        return res.status(400).json({ message: 'User already exists with this phone number' });
-      }
-      if (existingUser.email === email) {
+    const existingUserByPhone = await User.findByPhone(phone);
+    if (existingUserByPhone) {
+      return res.status(400).json({ message: 'User already exists with this phone number' });
+    }
+
+    if (email) {
+      const existingUserByEmail = await User.findByEmail(email);
+      if (existingUserByEmail) {
         return res.status(400).json({ message: 'User already exists with this email address' });
       }
     }
 
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
     // Create new user
-    const user = new User({
+    const user = await User.create({
       firstName,
       lastName,
       email,
       country,
       phone,
-      passwordHash: password
+      passwordHash
     });
 
-    await user.save();
-
-    const token = generateToken(user._id);
+    const token = generateToken(user.id);
 
     res.status(201).json({
       message: 'User created successfully',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -76,7 +76,7 @@ const login = async (req, res) => {
     const { phone, password } = req.body;
 
     // Find user
-    const user = await User.findOne({ phone });
+    const user = await User.findByPhone(phone);
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -87,13 +87,13 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user.id);
 
     res.json({
       message: 'Login successful',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,

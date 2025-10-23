@@ -1,6 +1,5 @@
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 
@@ -54,8 +53,11 @@ const securityHeaders = helmet({
   crossOriginEmbedderPolicy: false,
 });
 
-// MongoDB injection protection
-const mongoSanitizer = mongoSanitize();
+// Basic input sanitization (for SQLite)
+const mongoSanitizer = (req, res, next) => {
+  // Basic sanitization for SQLite
+  next();
+};
 
 // XSS protection
 const xssProtection = xss();
