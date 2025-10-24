@@ -32,16 +32,25 @@ const getSystemMetrics = () => {
 // Database health check
 const checkDatabaseHealth = async () => {
   try {
-    const mongoose = require('mongoose');
-    const state = mongoose.connection.readyState;
+    const { getDB } = require('../config/db');
+    const db = getDB();
     
-    return {
-      status: state === 1 ? 'connected' : 'disconnected',
-      readyState: state,
-      host: mongoose.connection.host,
-      port: mongoose.connection.port,
-      name: mongoose.connection.name
-    };
+    return new Promise((resolve) => {
+      db.get('SELECT 1 as test', (err, row) => {
+        if (err) {
+          resolve({
+            status: 'error',
+            error: err.message
+          });
+        } else {
+          resolve({
+            status: 'connected',
+            type: 'SQLite',
+            test: 'passed'
+          });
+        }
+      });
+    });
   } catch (error) {
     return {
       status: 'error',
